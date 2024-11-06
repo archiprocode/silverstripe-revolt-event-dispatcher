@@ -1,0 +1,10 @@
+---
+Name: events
+After:
+  - '#coreservices'
+---
+SilverStripe\Core\Injector\Injector:
+  ArchiPro\Silverstripe\EventDispatcher\Service\EventService:
+    constructor:
+      dispatcher: '%$Psr\EventDispatcher\EventDispatcherInterface'
+      listenerProvider: '%$Psr\EventDispatcher\ListenerProviderInterface' 

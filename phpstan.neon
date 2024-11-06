@@ -1,0 +1,14 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor/*
+    silverstripe:
+        checkUnusedViewVariables: false
+    ignoreErrors:
+        - '#Access to an undefined property .+::\$owner#'
+        - '#Call to an undefined method .+::hasExtension\(\)#'
+includes:
+    - vendor/symbiote/silverstripe-phpstan/phpstan.neon 
