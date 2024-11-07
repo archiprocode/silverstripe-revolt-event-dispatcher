@@ -2,9 +2,13 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher;
 
+use ArchiPro\EventDispatcher\ListenerProvider;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectEvent;
 use ArchiPro\Silverstripe\EventDispatcher\Event\Operation;
+use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
 use Closure;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
 
 /**
@@ -16,6 +20,8 @@ use SilverStripe\ORM\DataObject;
  */
 class DataObjectEventListener
 {
+    use Injectable;
+    
     /**
      * Creates a new DataObject event listener.
      *
@@ -29,6 +35,19 @@ class DataObjectEventListener
         private ?array $operations = null
     ) {
         $this->operations = $operations ?? Operation::cases();
+    }
+
+    /**
+     * Registers this listener with the given provider.
+     *
+     * If no provider is provided, the global EventService will be used.
+     */
+    public function selfRegister(ListenerProvider|EventService $provider = null): void
+    {
+        if (empty($provider)) {
+            $provider = Injector::inst()->get(EventService::class);
+        }
+        $provider->addListener(DataObjectEvent::class, $this);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Event;
 
+use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
@@ -118,17 +119,11 @@ class DataObjectEvent
             return null;
         }
 
-        $object = DataObject::get_by_id($this->objectClass, $this->objectID);
-
-        // If we want the specific version and the object is versioned
-        if ($useVersion && $this->version && $object && $object->hasExtension(Versioned::class)) {
-            /** @var Versioned|DataObject $object */
-            return $object->Version == $this->version
-                ? $object
-                : $object->Versions()->byID($this->version);
+        if (!$useVersion || empty($this->version)) {
+            return DataObject::get_by_id($this->objectClass, $this->objectID, false);
         }
 
-        return $object;
+        return Versioned::get_version($this->objectClass, $this->objectID, $this->version);
     }
 
     /**

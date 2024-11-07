@@ -30,15 +30,12 @@ class EventDispatchExtensionTest extends SapphireTest
     {
         parent::setUpBeforeClass();
 
-        $service = Injector::inst()->get(EventService::class);
-
-        // Add listener that captures events
-        $service->addListener(DataObjectEvent::class, new DataObjectEventListener(
+        DataObjectEventListener::create(
             function (DataObjectEvent $event) {
                 static::$events[] = $event;
             },
             [SimpleDataObject::class, VersionedDataObject::class]
-        ));
+        )->selfRegister();
     }
 
     protected function setUp(): void
