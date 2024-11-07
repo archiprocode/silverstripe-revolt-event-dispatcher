@@ -20,7 +20,7 @@ jobs:
           db: mysql80
           phpunit: true
           installer_version: ^5
-        - php: '8.2'
+        - php: '8.3'
           db: mariadb
           phpunit: true
           installer_version: ^5
