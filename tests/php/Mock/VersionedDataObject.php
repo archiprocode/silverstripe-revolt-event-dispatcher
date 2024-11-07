@@ -9,6 +9,7 @@ use SilverStripe\Versioned\Versioned;
 
 /**
  * @property string $Title
+ *
  * @mixin Versioned
  */
 class VersionedDataObject extends DataObject implements TestOnly
@@ -23,4 +24,4 @@ class VersionedDataObject extends DataObject implements TestOnly
         EventDispatchExtension::class,
         Versioned::class,
     ];
-} 
+}

@@ -9,3 +9,4 @@
 .DS_Store 
 composer.lock
 /public/
+.php-cs-fixer.cache

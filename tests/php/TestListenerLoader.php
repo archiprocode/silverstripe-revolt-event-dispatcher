@@ -16,7 +16,8 @@ class TestListenerLoader implements ListenerLoaderInterface
 
     public function __construct(
         private string $eventName
-    ) {}
+    ) {
+    }
 
     public function loadListeners(ListenerProvider $provider): void
     {

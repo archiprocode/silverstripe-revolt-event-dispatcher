@@ -9,18 +9,18 @@ use SilverStripe\Versioned\Versioned;
 
 /**
  * Event class representing operations performed on DataObjects.
- * 
+ *
  * This event is dispatched whenever a significant operation occurs on a DataObject,
  * such as creation, updates, deletion, or versioning operations. It captures key
  * information about the operation including:
- * 
+ *
  * - The ID of the affected DataObject
  * - The class of the DataObject
  * - The type of operation performed
  * - The version number (for versioned objects)
  * - The ID of the member who performed the operation
  * - The timestamp when the operation occurred
- * 
+ *
  * Example usage:
  * ```php
  * $event = DataObjectEvent::create(
@@ -42,11 +42,11 @@ class DataObjectEvent
     private readonly int $timestamp;
 
     /**
-     * @param int $objectID The ID of the affected DataObject
-     * @param string $objectClass The class name of the affected DataObject
-     * @param Operation $operation The type of operation performed
-     * @param int|null $version The version number (for versioned objects)
-     * @param int|null $memberID The ID of the member who performed the operation
+     * @param int       $objectID    The ID of the affected DataObject
+     * @param string    $objectClass The class name of the affected DataObject
+     * @param Operation $operation   The type of operation performed
+     * @param int|null  $version     The version number (for versioned objects)
+     * @param int|null  $memberID    The ID of the member who performed the operation
      */
     public function __construct(
         private readonly int $objectID,
@@ -108,9 +108,9 @@ class DataObjectEvent
 
     /**
      * Get the DataObject associated with this event
-     * 
+     *
      * @param bool $useVersion If true and the object is versioned, retrieves the specific version that was affected
-     * Note: This may return null if the object has been deleted since the event was created
+     *                         Note: This may return null if the object has been deleted since the event was created
      */
     public function getObject(bool $useVersion = false): ?DataObject
     {
@@ -119,12 +119,12 @@ class DataObjectEvent
         }
 
         $object = DataObject::get_by_id($this->objectClass, $this->objectID);
-        
+
         // If we want the specific version and the object is versioned
         if ($useVersion && $this->version && $object && $object->hasExtension(Versioned::class)) {
             /** @var Versioned|DataObject $object */
-            return $object->Version == $this->version 
-                ? $object 
+            return $object->Version == $this->version
+                ? $object
                 : $object->Versions()->byID($this->version);
         }
 
@@ -133,7 +133,7 @@ class DataObjectEvent
 
     /**
      * Get the Member who performed the operation
-     * 
+     *
      * Note: This may return null if the member has been deleted since the event was created
      * or if the operation was performed by a system process
      */
@@ -163,20 +163,20 @@ class DataObjectEvent
 
     /**
      * Unserialize the event from a string
-     * 
+     *
      * @param string $data
      */
     public function unserialize(string $data): void
     {
         $unserialized = unserialize($data);
-        
+
         // Use reflection to set readonly properties
         $reflection = new \ReflectionClass($this);
-        
+
         foreach ($unserialized as $property => $value) {
             $prop = $reflection->getProperty($property);
             $prop->setAccessible(true);
             $prop->setValue($this, $value);
         }
     }
-} 
+}

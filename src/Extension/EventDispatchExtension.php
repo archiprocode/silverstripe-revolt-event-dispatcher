@@ -2,19 +2,20 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Extension;
 
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Versioned\Versioned;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectEvent;
 use ArchiPro\Silverstripe\EventDispatcher\Event\Operation;
 use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
+use SilverStripe\Versioned\Versioned;
 
 /**
  * Extension that adds event dispatching capabilities to DataObjects.
- * 
+ *
  * @property DataObject|Versioned $owner
+ *
  * @method DataObject getOwner()
  */
 class EventDispatchExtension extends Extension
@@ -34,7 +35,7 @@ class EventDispatchExtension extends Extension
             $owner->hasExtension(Versioned::class) ? $owner->Version : null,
             Security::getCurrentUser()?->ID
         );
-        
+
         $this->dispatchEvent($event);
     }
 
@@ -51,7 +52,7 @@ class EventDispatchExtension extends Extension
             $owner->hasExtension(Versioned::class) ? $owner->Version : null,
             Security::getCurrentUser()?->ID
         );
-        
+
         $this->dispatchEvent($event);
     }
 
@@ -72,7 +73,7 @@ class EventDispatchExtension extends Extension
             $owner->Version,
             Security::getCurrentUser()?->ID
         );
-        
+
         $this->dispatchEvent($event);
     }
 
@@ -93,7 +94,7 @@ class EventDispatchExtension extends Extension
             $owner->Version,
             Security::getCurrentUser()?->ID
         );
-        
+
         $this->dispatchEvent($event);
     }
 
@@ -114,7 +115,7 @@ class EventDispatchExtension extends Extension
             $owner->Version,
             Security::getCurrentUser()?->ID
         );
-        
+
         $this->dispatchEvent($event);
     }
 
@@ -135,7 +136,7 @@ class EventDispatchExtension extends Extension
             $owner->Version,
             Security::getCurrentUser()?->ID
         );
-        
+
         $this->dispatchEvent($event);
     }
 
@@ -146,4 +147,4 @@ class EventDispatchExtension extends Extension
     {
         return Injector::inst()->get(EventService::class)->dispatch($event);
     }
-} 
+}

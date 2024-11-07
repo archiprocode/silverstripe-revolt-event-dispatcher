@@ -2,8 +2,8 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Tests\Event;
 
-use SilverStripe\Dev\SapphireTest;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectWriteEvent;
+use SilverStripe\Dev\SapphireTest;
 
 class AbstractDataObjectEventTest extends SapphireTest
 {
@@ -40,4 +40,4 @@ class AbstractDataObjectEventTest extends SapphireTest
         $this->assertArrayHasKey('changes', $data);
         $this->assertArrayHasKey('timestamp', $data);
     }
-} 
+}

@@ -2,8 +2,8 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Tests\Event;
 
-use SilverStripe\Dev\SapphireTest;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectVersionEvent;
+use SilverStripe\Dev\SapphireTest;
 
 class DataObjectVersionEventTest extends SapphireTest
 {
@@ -39,4 +39,4 @@ class DataObjectVersionEventTest extends SapphireTest
         $this->assertArrayHasKey('version', $data);
         $this->assertEquals(2, $data['version']);
     }
-} 
+}

@@ -76,7 +76,7 @@ class EventDispatchExtensionTest extends SapphireTest
         $object = SimpleDataObject::create(['Title' => 'Test']);
         $object->write();
         EventLoop::run();
-        
+
         static::$events = [];
         $object->delete();
         EventLoop::run();
@@ -101,7 +101,7 @@ class EventDispatchExtensionTest extends SapphireTest
         // Test publish
         $object->publishRecursive();
         EventLoop::run();
-        
+
         $this->assertCount(2, static::$events, 'Expected 2 events, 1 for create and 1 for publish');
         $this->assertEquals(Operation::PUBLISH, static::$events[1]->getOperation());
         $this->assertEquals($member->ID, static::$events[1]->getMemberID());
@@ -110,7 +110,7 @@ class EventDispatchExtensionTest extends SapphireTest
         static::$events = [];
         $object->doUnpublish();
         EventLoop::run();
-        
+
         $this->assertCount(2, static::$events, 'Expected 2 events, 1 for deleting the live version and 1 for unpublish');
         $this->assertEquals(Operation::UNPUBLISH, static::$events[1]->getOperation());
 
@@ -118,7 +118,7 @@ class EventDispatchExtensionTest extends SapphireTest
         static::$events = [];
         $object->doArchive();
         EventLoop::run();
-        
+
         $this->assertCount(2, static::$events, 'Expected 2 events, 1 for deleting the draft version version and 1 for archive');
         $this->assertEquals(Operation::ARCHIVE, static::$events[1]->getOperation());
     }

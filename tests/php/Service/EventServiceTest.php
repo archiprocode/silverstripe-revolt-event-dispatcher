@@ -5,20 +5,20 @@ namespace ArchiPro\Silverstripe\EventDispatcher\Tests\Service;
 use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
 use ArchiPro\Silverstripe\EventDispatcher\Tests\TestListenerLoader;
 use Revolt\EventLoop;
-use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\SapphireTest;
+
 class EventServiceTest extends SapphireTest
 {
-    
     protected function setUp(): void
     {
         parent::setUp();
     }
-    
+
     public function testEventDispatch(): void
     {
         // Create test event
-        $event = new class {
+        $event = new class () {
             public bool $handled = false;
         };
 
@@ -42,17 +42,17 @@ class EventServiceTest extends SapphireTest
     public function testEventDispatchWithConfiguredListener(): void
     {
         // Create test event
-        $event = new class {
+        $event = new class () {
             public bool $handled = false;
         };
         // Configure listener via config
         $eventClass = get_class($event);
         EventService::config()->set('listeners', [
             $eventClass => [
-                function($event) {
+                function ($event) {
                     $event->handled = true;
-                }
-            ]
+                },
+            ],
         ]);
 
         // Get fresh service instance with config applied
@@ -70,10 +70,10 @@ class EventServiceTest extends SapphireTest
     public function testEventDispatchWithConfiguredLoader(): void
     {
         // Create test event
-        $event = new class {
+        $event = new class () {
             public bool $handled = false;
         };
-        
+
         // Create test loader
         $loader = new TestListenerLoader(get_class($event));
 
@@ -83,13 +83,13 @@ class EventServiceTest extends SapphireTest
         // Get fresh service instance with config applied
         $service = Injector::inst()->get(EventService::class);
         $this->assertTrue($loader->loaded, 'Loader should have been used');
-        
+
         // Dispatch event
         $result = $service->dispatch($event);
-        
+
         EventLoop::run();
 
         // Assert loader was used and listener was called
         $this->assertTrue($loader->eventFired, 'Configured event listener should have been called');
     }
-} 
+}

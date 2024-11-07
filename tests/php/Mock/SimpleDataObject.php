@@ -20,4 +20,4 @@ class SimpleDataObject extends DataObject implements TestOnly
     private static array $extensions = [
         EventDispatchExtension::class,
     ];
-} 
+}

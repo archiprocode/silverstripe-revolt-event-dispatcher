@@ -5,12 +5,12 @@ namespace ArchiPro\Silverstripe\EventDispatcher\Service;
 use ArchiPro\EventDispatcher\AsyncEventDispatcher;
 use ArchiPro\EventDispatcher\ListenerProvider;
 use ArchiPro\Silverstripe\EventDispatcher\Contract\ListenerLoaderInterface;
-use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Core service class for handling event dispatching in Silverstripe.
- * 
+ *
  * This service wraps a PSR-14 compliant event dispatcher and provides
  * a centralized way to dispatch events throughout the application.
  */
@@ -21,12 +21,14 @@ class EventService
 
     /**
      * @config
+     *
      * @var array<string,array<callable>> Map of event class names to arrays of listener callbacks
      */
     private static array $listeners = [];
 
     /**
      * @config
+     *
      * @var array<ListenerLoaderInterface> Array of listener loaders
      */
     private static array $loaders = [];
@@ -76,6 +78,7 @@ class EventService
 
     /**
      * Adds a listener loader to the event service
+     *
      * @throws \RuntimeException If the loader does not implement ListenerLoaderInterface
      */
     public function addListenerLoader(ListenerLoaderInterface $loader): void
