@@ -24,7 +24,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ArchiPro\\Silverstripe\\EventDispatcher\\Tests\\": "tests/"
+            "ArchiPro\\Silverstripe\\EventDispatcher\\Tests\\": "tests/php/"
         }
     },
     "scripts": {
