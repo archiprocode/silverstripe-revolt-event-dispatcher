@@ -43,11 +43,5 @@
             "composer/installers": true,
             "silverstripe/vendor-plugin": true
         }
-    },
-    "repositories": [
-        {
-            "type": "github",
-            "url": "git@github.com:archiprocode/revolt-event-dispatcher.git"
-        }
-    ]
+    }
 }
