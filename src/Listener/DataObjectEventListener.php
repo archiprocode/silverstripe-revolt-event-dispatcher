@@ -1,6 +1,6 @@
 <?php
 
-namespace ArchiPro\Silverstripe\EventDispatcher;
+namespace ArchiPro\Silverstripe\EventDispatcher\Listener;
 
 use ArchiPro\EventDispatcher\ListenerProvider;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectEvent;

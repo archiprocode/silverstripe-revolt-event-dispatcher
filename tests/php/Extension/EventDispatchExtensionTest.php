@@ -2,9 +2,9 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Tests\Extension;
 
-use ArchiPro\Silverstripe\EventDispatcher\DataObjectEventListener;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectEvent;
 use ArchiPro\Silverstripe\EventDispatcher\Event\Operation;
+use ArchiPro\Silverstripe\EventDispatcher\Listener\DataObjectEventListener;
 use ArchiPro\Silverstripe\EventDispatcher\Tests\Mock\SimpleDataObject;
 use ArchiPro\Silverstripe\EventDispatcher\Tests\Mock\VersionedDataObject;
 use Revolt\EventLoop;
