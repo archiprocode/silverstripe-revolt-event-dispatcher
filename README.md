@@ -1,4 +1,5 @@
-# Silverstripe CMS Event Dispatcher Module
+# Silverstripe CMS RevoltEvent Dispatcher Module (experimental)
+[![CI](https://github.com/archiprocode/silverstripe-revolt-event-dispatcher/actions/workflows/ci.yml/badge.svg)](https://github.com/archiprocode/silverstripe-revolt-event-dispatcher/actions/workflows/ci.yml)
 
 This module adds the ability to dispatch and listen for events in Silverstripe CMS. It's built around Revolt PHP
 and AMPHP. It aims to process events asynchronously. It also provides some abstraction to help managing event around
