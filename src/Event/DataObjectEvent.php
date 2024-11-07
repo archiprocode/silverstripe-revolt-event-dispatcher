@@ -2,7 +2,6 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Event;
 
-use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;

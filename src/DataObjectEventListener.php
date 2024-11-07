@@ -21,7 +21,7 @@ use SilverStripe\ORM\DataObject;
 class DataObjectEventListener
 {
     use Injectable;
-    
+
     /**
      * Creates a new DataObject event listener.
      *
