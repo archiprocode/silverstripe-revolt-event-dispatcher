@@ -7,6 +7,7 @@ use ArchiPro\EventDispatcher\ListenerProvider;
 use ArchiPro\Silverstripe\EventDispatcher\Contract\ListenerLoaderInterface;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 
 /**
  * Core service class for handling event dispatching in Silverstripe.
@@ -53,6 +54,9 @@ class EventService
 
         foreach ($listeners as $eventClass => $listeners) {
             foreach ($listeners as $listener) {
+                if (is_string($listener)) {
+                    $listener = Injector::inst()->get($listener);
+                }
                 $this->addListener($eventClass, $listener);
             }
         }
@@ -64,6 +68,9 @@ class EventService
     private function loadListeners(): void
     {
         foreach ($this->config()->get('loaders') as $loader) {
+            if (is_string($loader)) {
+                $loader = Injector::inst()->get($loader);
+            }
             $this->addListenerLoader($loader);
         }
     }
