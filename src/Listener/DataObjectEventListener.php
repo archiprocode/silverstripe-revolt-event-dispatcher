@@ -17,6 +17,8 @@ use SilverStripe\ORM\DataObject;
  * This listener can be configured to only handle specific operations (create, update, delete etc)
  * and specific DataObject classes. When an event matches the configured criteria, the callback
  * is executed with the event.
+ *
+ * @template T of DataObject
  */
 class DataObjectEventListener
 {
@@ -25,8 +27,9 @@ class DataObjectEventListener
     /**
      * Creates a new DataObject event listener.
      *
-     * @param Closure(DataObjectEvent): void $callback   Callback to execute when an event matches
-     * @param class-string<DataObject>[]     $classes    Array of DataObject class names to listen for
+     * @template T of DataObject
+     * @param Closure(DataObjectEvent<T>): void $callback   Callback to execute when an event matches
+     * @param class-string<T>[]             $classes    Array of DataObject class names to listen for
      * @param Operation[]|null               $operations Array of operations to listen for. If null, listens for all operations.
      */
     public function __construct(
@@ -56,7 +59,7 @@ class DataObjectEventListener
      * Checks if the event matches the configured operations and classes,
      * and executes the callback if it does.
      *
-     * @param DataObjectEvent $event The event to handle
+     * @param DataObjectEvent<T> $event The event to handle
      */
     public function __invoke(DataObjectEvent $event): void
     {

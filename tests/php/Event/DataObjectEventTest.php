@@ -20,7 +20,7 @@ class DataObjectEventTest extends SapphireTest
 
     public function testEventCreation(): void
     {
-        $event = DataObjectEvent::create(1, SimpleDataObject::class, Operation::CREATE, null, 1);
+        $event = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE, null, 1);
 
         $this->assertEquals(1, $event->getObjectID());
         $this->assertEquals(SimpleDataObject::class, $event->getObjectClass());
@@ -35,7 +35,7 @@ class DataObjectEventTest extends SapphireTest
         /** @var SimpleDataObject $object */
         $object = $this->objFromFixture(SimpleDataObject::class, 'object1');
 
-        $event = DataObjectEvent::create($object->ID, SimpleDataObject::class, Operation::UPDATE);
+        $event = DataObjectEvent::create(SimpleDataObject::class, $object->ID, Operation::UPDATE);
 
         $this->assertNotNull($event->getObject());
         $this->assertEquals($object->ID, $event->getObject()->ID);
@@ -50,7 +50,7 @@ class DataObjectEventTest extends SapphireTest
         $object->Title = 'Updated Title';
         $object->write();
 
-        $event = DataObjectEvent::create($object->ID, VersionedDataObject::class, Operation::UPDATE, $object->Version);
+        $event = DataObjectEvent::create(VersionedDataObject::class, $object->ID, Operation::UPDATE, $object->Version);
 
         // Get current version
         $currentObject = $event->getObject(false);
@@ -61,7 +61,7 @@ class DataObjectEventTest extends SapphireTest
         $this->assertEquals('Updated Title', $versionedObject->Title);
 
         // Get previous version
-        $previousEvent = DataObjectEvent::create($object->ID, VersionedDataObject::class, Operation::UPDATE, $object->Version - 1);
+        $previousEvent = DataObjectEvent::create(VersionedDataObject::class, $object->ID, Operation::UPDATE, $object->Version - 1);
         $previousVersion = $previousEvent->getObject(true);
         $this->assertEquals('Original Title', $previousVersion->Title);
     }
@@ -71,7 +71,7 @@ class DataObjectEventTest extends SapphireTest
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'member1');
 
-        $event = DataObjectEvent::create(1, SimpleDataObject::class, Operation::CREATE, null, $member->ID);
+        $event = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE, null, $member->ID);
 
         $this->assertNotNull($event->getMember());
         $this->assertEquals($member->ID, $event->getMember()->ID);
@@ -79,7 +79,7 @@ class DataObjectEventTest extends SapphireTest
 
     public function testSerialization(): void
     {
-        $event = DataObjectEvent::create(1, SimpleDataObject::class, Operation::CREATE, 2, 3);
+        $event = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE, 2, 3);
 
         $serialized = serialize($event);
         /** @var DataObjectEvent $unserialized */

@@ -27,8 +27,8 @@ class EventDispatchExtension extends Extension
     {
         $owner = $this->getOwner();
         $event = DataObjectEvent::create(
-            $owner->ID,
             get_class($owner),
+            $owner->ID,
             // By this point isInDB() will return true even for new records since the ID is already set
             // Instead check if the ID field was changed which indicates this is a new record
             $owner->isChanged('ID') ? Operation::CREATE : Operation::UPDATE,
@@ -46,8 +46,8 @@ class EventDispatchExtension extends Extension
     {
         $owner = $this->getOwner();
         $event = DataObjectEvent::create(
-            $owner->ID,
             get_class($owner),
+            $owner->ID,
             Operation::DELETE,
             $owner->hasExtension(Versioned::class) ? $owner->Version : null,
             Security::getCurrentUser()?->ID
@@ -67,8 +67,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            $owner->ID,
             get_class($owner),
+            $owner->ID,
             Operation::PUBLISH,
             $owner->Version,
             Security::getCurrentUser()?->ID
@@ -88,8 +88,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            $owner->ID,
             get_class($owner),
+            $owner->ID,
             Operation::UNPUBLISH,
             $owner->Version,
             Security::getCurrentUser()?->ID
@@ -109,8 +109,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            $owner->ID,
             get_class($owner),
+            $owner->ID,
             Operation::ARCHIVE,
             $owner->Version,
             Security::getCurrentUser()?->ID
@@ -130,8 +130,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            $owner->ID,
             get_class($owner),
+            $owner->ID,
             Operation::RESTORE,
             $owner->Version,
             Security::getCurrentUser()?->ID

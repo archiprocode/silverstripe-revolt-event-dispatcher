@@ -24,13 +24,15 @@ use SilverStripe\Versioned\Versioned;
  * Example usage:
  * ```php
  * $event = DataObjectEvent::create(
- *     $dataObject->ID,
  *     get_class($dataObject),
+ *     $dataObject->ID,
  *     Operation::UPDATE,
  *     $dataObject->Version,
  *     Security::getCurrentUser()?->ID
  * );
  * ```
+ *
+ * @template T of DataObject
  */
 class DataObjectEvent
 {
@@ -42,15 +44,15 @@ class DataObjectEvent
     private readonly int $timestamp;
 
     /**
+     * @param class-string<T> $objectClass The class name of the affected DataObject
      * @param int       $objectID    The ID of the affected DataObject
-     * @param string    $objectClass The class name of the affected DataObject
      * @param Operation $operation   The type of operation performed
      * @param int|null  $version     The version number (for versioned objects)
      * @param int|null  $memberID    The ID of the member who performed the operation
      */
     public function __construct(
-        private readonly int $objectID,
         private readonly string $objectClass,
+        private readonly int $objectID,
         private readonly Operation $operation,
         private readonly ?int $version = null,
         private readonly ?int $memberID = null
@@ -108,6 +110,8 @@ class DataObjectEvent
 
     /**
      * Get the DataObject associated with this event
+     *
+     * @phpstan-return T|null
      *
      * @param bool $useVersion If true and the object is versioned, retrieves the specific version that was affected
      *                         Note: This may return null if the object has been deleted since the event was created
