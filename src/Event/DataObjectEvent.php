@@ -45,10 +45,10 @@ class DataObjectEvent
 
     /**
      * @param class-string<T> $objectClass The class name of the affected DataObject
-     * @param int       $objectID    The ID of the affected DataObject
-     * @param Operation $operation   The type of operation performed
-     * @param int|null  $version     The version number (for versioned objects)
-     * @param int|null  $memberID    The ID of the member who performed the operation
+     * @param int             $objectID    The ID of the affected DataObject
+     * @param Operation       $operation   The type of operation performed
+     * @param int|null        $version     The version number (for versioned objects)
+     * @param int|null        $memberID    The ID of the member who performed the operation
      */
     public function __construct(
         private readonly string $objectClass,

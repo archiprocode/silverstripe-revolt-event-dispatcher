@@ -28,9 +28,10 @@ class DataObjectEventListener
      * Creates a new DataObject event listener.
      *
      * @template T of DataObject
+     *
      * @param Closure(DataObjectEvent<T>): void $callback   Callback to execute when an event matches
-     * @param class-string<T>[]             $classes    Array of DataObject class names to listen for
-     * @param Operation[]|null               $operations Array of operations to listen for. If null, listens for all operations.
+     * @param class-string<T>[]                 $classes    Array of DataObject class names to listen for
+     * @param Operation[]|null                  $operations Array of operations to listen for. If null, listens for all operations.
      */
     public function __construct(
         private Closure $callback,
