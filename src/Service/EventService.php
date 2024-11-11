@@ -34,6 +34,9 @@ class EventService
      */
     private static array $loaders = [];
 
+    /** Whether events should be suppressed from being dispatched. Used for testing. */
+    private bool $suppressDispatch = false;
+
     public function __construct(
         private readonly AsyncEventDispatcher $dispatcher,
         private readonly ListenerProvider $listenerProvider
@@ -104,6 +107,9 @@ class EventService
      */
     public function dispatch(object $event): object
     {
+        if ($this->suppressDispatch) {
+            return $event;
+        }
         return $this->dispatcher->dispatch($event);
     }
 
@@ -113,5 +119,21 @@ class EventService
     public function getListenerProvider(): ListenerProvider
     {
         return $this->listenerProvider;
+    }
+
+    /**
+     * Enables event dispatching. Use when testing to avoid side effects.
+     */
+    public function enableDispatch(): void
+    {
+        $this->suppressDispatch = false;
+    }
+
+    /**
+     * Disables event dispatching. Use when testing to avoid side effects.
+     */
+    public function disableDispatch(): void
+    {
+        $this->suppressDispatch = true;
     }
 }

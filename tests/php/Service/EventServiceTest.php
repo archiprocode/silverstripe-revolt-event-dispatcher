@@ -92,4 +92,37 @@ class EventServiceTest extends SapphireTest
         // Assert loader was used and listener was called
         $this->assertTrue($loader->eventFired, 'Configured event listener should have been called');
     }
+
+    public function testEventDispatchWithDisabledDispatch(): void
+    {
+        // Create test event
+        $event = new class () {
+            public bool $handled = false;
+        };
+
+        // Create event service with real implementations
+        $service = Injector::inst()->get(EventService::class);
+        // Add test listener
+        $service->addListener(get_class($event), function ($event) {
+            $event->handled = true;
+        });
+
+        // Dispatch event
+        $service->disableDispatch();
+        $result = $service->dispatch($event);
+
+        EventLoop::run();
+
+        // Assert listener was called
+        $this->assertFalse($result->handled, 'Event listener should not have been called when dispatch is disabled');
+
+        // Re-enabled dispatch
+        $service->enableDispatch();
+        $result = $service->dispatch($event);
+
+        EventLoop::run();
+
+        // Assert listener was called
+        $this->assertTrue($result->handled, 'Event listener should have been called when dispatch is re-enabled');
+    }
 }
