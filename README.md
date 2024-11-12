@@ -236,3 +236,68 @@ return `null` if the DataObject has been deleted.
 
 `DataObjectEvent::getObject(true) will attempt to retrieve the exact version of the DataObject that fired the event,
 assuming it was versioned.
+
+## Testing Your Events
+
+### Writing Event Tests
+
+When testing your event listeners, you'll need to:
+1. Dispatch your events
+2. Run the event loop
+3. Assert the expected outcomes
+
+Here's an example test:
+
+```php
+use Revolt\EventLoop;
+use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Core\Injector\Injector;
+use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
+
+class MyEventTest extends SapphireTest
+{
+    public function testMyCustomEvent(): void
+    {
+        // Create your test event
+        $event = new MyCustomEvent('test message');
+        
+        // Get the event service
+        $service = Injector::inst()->get(EventService::class);
+        
+        // Add your test listener ... or if you have already
+        $wasCalled = false;
+        $service->addListener(
+            MyCustomEvent::class, 
+            [MyCustomEventListener::class, 'handleEvent']
+        );
+        
+        // Dispatch the event
+        $service->dispatch($event);
+        
+        // Run the event loop to process events
+        EventLoop::run();
+        
+        // Assert your listener was called
+        $this->assertTrue(
+            MyCustomEventListener::wasCalled(),
+            'Assert some side effect of the event being handled'
+        );
+    }
+}
+```
+
+### Disabling event dispatching
+
+You can disable event dispatching for test to avoid side affects from irrelevant events that might be fired while 
+scaffolding fixtures.
+
+Call `EventService::singleton()->disableDispatch()` to disable event dispatching while setting up your test.
+
+When you are ready to start running your test, call `EventService::singleton()->enableDispatch()` to start listening for
+events again.
+
+### Important Testing Notes
+
+- Always remember to run `EventLoop::run()` after dispatching events
+- Events are processed asynchronously, so assertions should happen after running the event loop
+- For DataObject events, make sure your test class has the `EventDispatchExtension` applied
