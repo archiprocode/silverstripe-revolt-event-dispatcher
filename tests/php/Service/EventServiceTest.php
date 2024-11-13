@@ -10,9 +10,9 @@ use SilverStripe\Dev\SapphireTest;
 
 class EventServiceTest extends SapphireTest
 {
-    protected function setUp(): void
+    private function getService(): EventService 
     {
-        parent::setUp();
+        return Injector::inst()->get(EventService::class);
     }
 
     public function testEventDispatch(): void
@@ -22,8 +22,7 @@ class EventServiceTest extends SapphireTest
             public bool $handled = false;
         };
 
-        // Create event service with real implementations
-        $service = Injector::inst()->get(EventService::class);
+        $service = $this->getService();
 
         // Add test listener
         $service->addListener(get_class($event), function ($event) {
@@ -31,9 +30,7 @@ class EventServiceTest extends SapphireTest
         });
 
         // Dispatch event
-        $result = $service->dispatch($event);
-
-        EventLoop::run();
+        $result = $service->dispatch($event)->await();
 
         // Assert listener was called
         $this->assertTrue($result->handled, 'Event listener should have been called');
@@ -55,13 +52,10 @@ class EventServiceTest extends SapphireTest
             ],
         ]);
 
-        // Get fresh service instance with config applied
-        $service = Injector::inst()->get(EventService::class);
+        $service = $this->getService();
 
         // Dispatch event
-        $result = $service->dispatch($event);
-
-        EventLoop::run();
+        $result = $service->dispatch($event)->await();
 
         // Assert listener was called
         $this->assertTrue($result->handled, 'Configured event listener should have been called');
@@ -80,8 +74,7 @@ class EventServiceTest extends SapphireTest
         // Configure loader via config
         EventService::config()->set('loaders', [$loader]);
 
-        // Get fresh service instance with config applied
-        $service = Injector::inst()->get(EventService::class);
+        $service = $this->getService();
         $this->assertTrue($loader->loaded, 'Loader should have been used');
 
         // Dispatch event
@@ -100,8 +93,8 @@ class EventServiceTest extends SapphireTest
             public bool $handled = false;
         };
 
-        // Create event service with real implementations
-        $service = Injector::inst()->get(EventService::class);
+        $service = $this->getService();
+
         // Add test listener
         $service->addListener(get_class($event), function ($event) {
             $event->handled = true;
@@ -109,18 +102,14 @@ class EventServiceTest extends SapphireTest
 
         // Dispatch event
         $service->disableDispatch();
-        $result = $service->dispatch($event);
-
-        EventLoop::run();
+        $result = $service->dispatch($event)->await();
 
         // Assert listener was called
         $this->assertFalse($result->handled, 'Event listener should not have been called when dispatch is disabled');
 
         // Re-enabled dispatch
         $service->enableDispatch();
-        $result = $service->dispatch($event);
-
-        EventLoop::run();
+        $result = $service->dispatch($event)->await();
 
         // Assert listener was called
         $this->assertTrue($result->handled, 'Event listener should have been called when dispatch is re-enabled');

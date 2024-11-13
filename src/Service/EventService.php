@@ -2,6 +2,7 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Service;
 
+use Amp\Future;
 use ArchiPro\EventDispatcher\AsyncEventDispatcher;
 use ArchiPro\EventDispatcher\ListenerProvider;
 use ArchiPro\Silverstripe\EventDispatcher\Contract\ListenerLoaderInterface;
@@ -109,11 +110,15 @@ class EventService
 
     /**
      * Dispatches an event to all registered listeners
+     *
+     * @template T of object
+     * @param T $event
+     * @return Future<T>
      */
-    public function dispatch(object $event): object
+    public function dispatch(object $event): Future
     {
         if ($this->suppressDispatch) {
-            return $event;
+            return Future::complete($event);
         }
         return $this->dispatcher->dispatch($event);
     }

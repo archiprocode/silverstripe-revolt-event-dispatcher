@@ -121,16 +121,15 @@ class MemberListenerLoader implements ListenerLoaderInterface
     public function loadListeners(ListenerProvider $provider): void
     {
         DataObjectEventListener::create(
-            Closure::fromCallable([self::class, 'onMemberCreated']),
+            Closure::fromCallable([$this, 'onMemberCreated']),
             [Member::class],
             [Operation::CREATE]
         )->selfRegister($provider);
     }
 
-    public static function onMemberCreated(DataObjectEvent $event): void
+    public function onMemberCreated(DataObjectEvent $event): void
     {
         $member = $event->getObject();
-        error_log('Member created: ' . $member->ID);
         Email::create()
             ->setTo($member->Email)
             ->setSubject('Welcome to our site')
@@ -298,6 +297,8 @@ events again.
 
 ### Important Testing Notes
 
-- Always remember to run `EventLoop::run()` after dispatching events
-- Events are processed asynchronously, so assertions should happen after running the event loop
-- For DataObject events, make sure your test class has the `EventDispatchExtension` applied
+- Events are processed asynchronously by default. You can force processing of events by:
+    - calling `EventLoop::run()` or
+    - calling `await()` on the returned value of the `dispatch` method. e.g.: `EventService::dispatch($event)->await()`.
+- For DataObject events, make sure your test class applies the `EventDispatchExtension` to the relevant DataObject
+  classes.
