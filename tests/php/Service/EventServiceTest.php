@@ -10,7 +10,7 @@ use SilverStripe\Dev\SapphireTest;
 
 class EventServiceTest extends SapphireTest
 {
-    private function getService(): EventService 
+    private function getService(): EventService
     {
         return Injector::inst()->get(EventService::class);
     }

@@ -112,7 +112,9 @@ class EventService
      * Dispatches an event to all registered listeners
      *
      * @template T of object
+     *
      * @param T $event
+     *
      * @return Future<T>
      */
     public function dispatch(object $event): Future
