@@ -10,3 +10,4 @@
 composer.lock
 /public/
 .php-cs-fixer.cache
+phpstan.cache/

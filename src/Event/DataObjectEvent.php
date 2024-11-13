@@ -123,7 +123,9 @@ class DataObjectEvent
         }
 
         if (!$useVersion || empty($this->version)) {
-            return DataObject::get_by_id($this->objectClass, $this->objectID, false);
+            /** @var T|null $object*/
+            $object = DataObject::get($this->objectClass)->byID($this->objectID);
+            return $object;
         }
 
         return Versioned::get_version($this->objectClass, $this->objectID, $this->version);

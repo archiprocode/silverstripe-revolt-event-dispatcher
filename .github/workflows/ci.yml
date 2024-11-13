@@ -43,4 +43,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Check coding standards
-        run: php-cs-fixer fix --dry-run --diff 
+        run: php-cs-fixer fix --dry-run --diff
+
+      - name: Static Analysis
+        run: vendor/bin/phpstan analyse

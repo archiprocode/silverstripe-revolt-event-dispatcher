@@ -3,12 +3,10 @@ parameters:
     paths:
         - src
         - tests
+    tmpDir: phpstan.cache
     excludePaths:
-        - vendor/*
-    silverstripe:
-        checkUnusedViewVariables: false
+        analyseAndScan:
+            - vendor
     ignoreErrors:
-        - '#Access to an undefined property .+::\$owner#'
-        - '#Call to an undefined method .+::hasExtension\(\)#'
-includes:
-    - vendor/symbiote/silverstripe-phpstan/phpstan.neon 
+        - '#Static property ArchiPro\\Silverstripe\\EventDispatcher\\Service\\EventService::\$listeners is never read, only written\.#'
+        - '#Static property ArchiPro\\Silverstripe\\EventDispatcher\\Service\\EventService::\$loaders is never read, only written\.#'

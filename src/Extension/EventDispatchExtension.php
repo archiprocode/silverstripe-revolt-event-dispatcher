@@ -2,6 +2,7 @@
 
 namespace ArchiPro\Silverstripe\EventDispatcher\Extension;
 
+use Amp\Future;
 use ArchiPro\Silverstripe\EventDispatcher\Event\DataObjectEvent;
 use ArchiPro\Silverstripe\EventDispatcher\Event\Operation;
 use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
@@ -14,9 +15,8 @@ use SilverStripe\Versioned\Versioned;
 /**
  * Extension that adds event dispatching capabilities to DataObjects.
  *
- * @property DataObject|Versioned $owner
- *
- * @method DataObject getOwner()
+ * @phpstan-template T of DataObject
+ * @phpstan-extends Extension<T>
  */
 class EventDispatchExtension extends Extension
 {
@@ -32,7 +32,7 @@ class EventDispatchExtension extends Extension
             // By this point isInDB() will return true even for new records since the ID is already set
             // Instead check if the ID field was changed which indicates this is a new record
             $owner->isChanged('ID') ? Operation::CREATE : Operation::UPDATE,
-            $owner->hasExtension(Versioned::class) ? $owner->Version : null,
+            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -49,7 +49,7 @@ class EventDispatchExtension extends Extension
             get_class($owner),
             $owner->ID,
             Operation::DELETE,
-            $owner->hasExtension(Versioned::class) ? $owner->Version : null,
+            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -70,7 +70,7 @@ class EventDispatchExtension extends Extension
             get_class($owner),
             $owner->ID,
             Operation::PUBLISH,
-            $owner->Version,
+            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -91,7 +91,7 @@ class EventDispatchExtension extends Extension
             get_class($owner),
             $owner->ID,
             Operation::UNPUBLISH,
-            $owner->Version,
+            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -112,7 +112,7 @@ class EventDispatchExtension extends Extension
             get_class($owner),
             $owner->ID,
             Operation::ARCHIVE,
-            $owner->Version,
+            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -133,7 +133,7 @@ class EventDispatchExtension extends Extension
             get_class($owner),
             $owner->ID,
             Operation::RESTORE,
-            $owner->Version,
+            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -142,9 +142,23 @@ class EventDispatchExtension extends Extension
 
     /**
      * Dispatches an event using the EventService
+     *
+     * @phpstan-param DataObjectEvent<T> $event
+     * @phpstan-return Future<DataObjectEvent<T>>
      */
-    protected function dispatchEvent(DataObjectEvent $event): DataObjectEvent
+    protected function dispatchEvent(DataObjectEvent $event): Future
     {
         return Injector::inst()->get(EventService::class)->dispatch($event);
+    }
+
+    private function getVersion(): ?int
+    {
+        $owner = $this->getOwner();
+        if (!$owner->hasExtension(Versioned::class)) {
+            return null;
+        }
+
+        /** @var Versioned $owner */
+        return $owner->Version;
     }
 }

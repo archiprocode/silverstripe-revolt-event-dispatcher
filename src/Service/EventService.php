@@ -22,7 +22,6 @@ class EventService
 
     /**
      * @config
-     *
      * @var array<string,array<callable>> Map of event class names to arrays of listener callbacks
      */
     private static array $listeners = [];
@@ -80,6 +79,10 @@ class EventService
 
     /**
      * Adds a listener to the event service
+     *
+     * @template T of object
+     * @param class-string<T> $event The event class name
+     * @param callable(T): void $listener The listener callback
      */
     public function addListener(string $event, callable $listener): void
     {

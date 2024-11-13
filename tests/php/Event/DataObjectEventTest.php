@@ -11,8 +11,10 @@ use SilverStripe\Security\Member;
 
 class DataObjectEventTest extends SapphireTest
 {
+    /** @var string */
     protected static $fixture_file = 'DataObjectEventTest.yml';
 
+    /** @var string[] */
     protected static $extra_dataobjects = [
         SimpleDataObject::class,
         VersionedDataObject::class,
@@ -50,18 +52,23 @@ class DataObjectEventTest extends SapphireTest
         $object->Title = 'Updated Title';
         $object->write();
 
+        /** @var DataObjectEvent<VersionedDataObject> $event */
         $event = DataObjectEvent::create(VersionedDataObject::class, $object->ID, Operation::UPDATE, $object->Version);
 
         // Get current version
+        /** @var VersionedDataObject $currentObject */
         $currentObject = $event->getObject(false);
         $this->assertEquals('Updated Title', $currentObject->Title);
 
         // Get specific version
+        /** @var VersionedDataObject $versionedObject */
         $versionedObject = $event->getObject(true);
         $this->assertEquals('Updated Title', $versionedObject->Title);
 
         // Get previous version
+        /** @var DataObjectEvent<VersionedDataObject> $previousEvent */
         $previousEvent = DataObjectEvent::create(VersionedDataObject::class, $object->ID, Operation::UPDATE, $object->Version - 1);
+        /** @var VersionedDataObject $previousVersion */
         $previousVersion = $previousEvent->getObject(true);
         $this->assertEquals('Original Title', $previousVersion->Title);
     }
@@ -82,7 +89,7 @@ class DataObjectEventTest extends SapphireTest
         $event = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE, 2, 3);
 
         $serialized = serialize($event);
-        /** @var DataObjectEvent $unserialized */
+        /** @var DataObjectEvent<SimpleDataObject> $unserialized */
         $unserialized = unserialize($serialized);
 
         $this->assertEquals(1, $unserialized->getObjectID());
