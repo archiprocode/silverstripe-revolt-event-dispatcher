@@ -8,7 +8,7 @@ use ArchiPro\Silverstripe\EventDispatcher\Contract\ListenerLoaderInterface;
 /**
  * This test loader will listen for the event provided in the constructor
  * and set the eventFired property to true when the event is fired.
- * 
+ *
  * @template T of object
  */
 class TestListenerLoader implements ListenerLoaderInterface

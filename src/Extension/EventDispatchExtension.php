@@ -16,6 +16,7 @@ use SilverStripe\Versioned\Versioned;
  * Extension that adds event dispatching capabilities to DataObjects.
  *
  * @phpstan-template T of DataObject
+ *
  * @phpstan-extends Extension<T>
  */
 class EventDispatchExtension extends Extension
@@ -144,6 +145,7 @@ class EventDispatchExtension extends Extension
      * Dispatches an event using the EventService
      *
      * @phpstan-param DataObjectEvent<T> $event
+     *
      * @phpstan-return Future<DataObjectEvent<T>>
      */
     protected function dispatchEvent(DataObjectEvent $event): Future

@@ -9,9 +9,9 @@ use ArchiPro\Silverstripe\EventDispatcher\Tests\Mock\SimpleDataObject;
 use ArchiPro\Silverstripe\EventDispatcher\Tests\Mock\VersionedDataObject;
 use Revolt\EventLoop;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
-use SilverStripe\ORM\DataObject;
 
 class EventDispatchExtensionTest extends SapphireTest
 {

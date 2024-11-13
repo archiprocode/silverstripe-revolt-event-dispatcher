@@ -3,9 +3,9 @@
 namespace ArchiPro\Silverstripe\EventDispatcher\Tests\Mock;
 
 use ArchiPro\Silverstripe\EventDispatcher\Extension\EventDispatchExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Core\Extension;
 use SilverStripe\Versioned\Versioned;
 
 /**

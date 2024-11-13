@@ -32,7 +32,7 @@ class DataObjectEventListener
      *
      * @param Closure(DataObjectEvent<T>): void $callback   Callback to execute when an event matches
      * @param class-string<T>[]                 $classes    Array of DataObject class names to listen for
-     * @param Operation[]                  $operations Array of operations to listen for. If null, listens for all operations.
+     * @param Operation[]                       $operations Array of operations to listen for. If null, listens for all operations.
      */
     public function __construct(
         private readonly Closure $callback,
