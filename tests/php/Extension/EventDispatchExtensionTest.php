@@ -11,18 +11,21 @@ use Revolt\EventLoop;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\ORM\DataObject;
 
 class EventDispatchExtensionTest extends SapphireTest
 {
+    /** @var string */
     protected static $fixture_file = 'EventDispatchExtensionTest.yml';
 
+    /** @var class-string<DataObject>[] */
     protected static $extra_dataobjects = [
         SimpleDataObject::class,
         VersionedDataObject::class,
     ];
 
-    /** @var DataObjectEvent[] */
-    private static array $events = [];
+    /** @var DataObjectEvent<DataObject>[] */
+    protected static array $events = [];
 
     public static function setUpBeforeClass(): void
     {

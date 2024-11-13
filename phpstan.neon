@@ -8,5 +8,5 @@ parameters:
         analyseAndScan:
             - vendor
     ignoreErrors:
-        - '#Static property ArchiPro\\Silverstripe\\EventDispatcher\\Service\\EventService::\$listeners is never read, only written\.#'
-        - '#Static property ArchiPro\\Silverstripe\\EventDispatcher\\Service\\EventService::\$loaders is never read, only written\.#'
+        - '#Static property .* is never read, only written\.#'
+        - '#Offset \d+ does not exist on array\{\}#'

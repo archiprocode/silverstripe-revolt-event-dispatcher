@@ -20,12 +20,14 @@ use SilverStripe\ORM\DataObject;
  */
 class DataObjectEventListenerTest extends SapphireTest
 {
+    /** @var class-string<DataObject>[] */
     protected static $extra_dataobjects = [
         SimpleDataObject::class,
         VersionedDataObject::class,
     ];
 
-    private array $receivedEvents = [];
+    /** @var DataObjectEvent<DataObject>[] */
+    protected array $receivedEvents = [];
 
     protected function setUp(): void
     {
@@ -127,7 +129,7 @@ class DataObjectEventListenerTest extends SapphireTest
     public function testSelfRegister(): void
     {
         // Create a mock event service
-        /** @var MockObject|ListenerProvider $provider */
+        /** @var MockObject&ListenerProvider $provider */
         $provider = $this->createMock(ListenerProvider::class);
         $provider->expects($this->once())
             ->method('addListener')
