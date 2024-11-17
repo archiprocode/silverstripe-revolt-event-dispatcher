@@ -9,7 +9,7 @@
         "silverstripe/versioned": "^1.13 || ^2.0",
         "psr/event-dispatcher": "^1.0",
         "psr/event-dispatcher-implementation": "^1.0",
-        "archipro/revolt-event-dispatcher": "dev-master"
+        "archipro/revolt-event-dispatcher": "^0.0.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
