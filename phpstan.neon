@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    tmpDir: phpstan.cache
+    excludePaths:
+        analyseAndScan:
+            - vendor
+    ignoreErrors:
+        - '#Static property .* is never read, only written\.#'
+        - '#Offset \d+ does not exist on array\{\}#'

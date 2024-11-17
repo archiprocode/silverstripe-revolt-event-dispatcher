@@ -1,0 +1,13 @@
+ArchiPro\Silverstripe\EventDispatcher\Tests\Mock\SimpleDataObject:
+  object1:
+    Title: 'Test Object'
+
+ArchiPro\Silverstripe\EventDispatcher\Tests\Mock\VersionedDataObject:
+  versioned1:
+    Title: 'Original Title'
+
+SilverStripe\Security\Member:
+  member1:
+    FirstName: 'Test'
+    Surname: 'User'
+    Email: 'test@example.com' 

@@ -1,0 +1,23 @@
+---
+Name: events
+After:
+  - '#coreservices'
+---
+SilverStripe\Core\Injector\Injector:
+  # Define the listener provider
+  ArchiPro\EventDispatcher\ListenerProvider:
+    class: ArchiPro\EventDispatcher\ListenerProvider
+  
+  # Default event dispatcher
+  ArchiPro\EventDispatcher\AsyncEventDispatcher:
+    class: ArchiPro\EventDispatcher\AsyncEventDispatcher
+    constructor:
+      listenerProvider: '%$ArchiPro\EventDispatcher\ListenerProvider'
+  Psr\EventDispatcher\EventDispatcherInterface:
+    alias: '%$ArchiPro\EventDispatcher\AsyncEventDispatcher'
+
+  # Bootstrap the event service
+  ArchiPro\Silverstripe\EventDispatcher\Service\EventService:
+    constructor: 
+      dispatcher: '%$ArchiPro\EventDispatcher\AsyncEventDispatcher'
+      listenerProvider: '%$ArchiPro\EventDispatcher\ListenerProvider'
