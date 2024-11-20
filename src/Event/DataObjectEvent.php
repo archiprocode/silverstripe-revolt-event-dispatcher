@@ -21,17 +21,6 @@ use SilverStripe\Versioned\Versioned;
  * - The ID of the member who performed the operation
  * - The timestamp when the operation occurred
  *
- * Example usage:
- * ```php
- * $event = DataObjectEvent::create(
- *     get_class($dataObject),
- *     $dataObject->ID,
- *     Operation::UPDATE,
- *     $dataObject->Version,
- *     Security::getCurrentUser()?->ID
- * );
- * ```
- *
  * @template T of DataObject
  */
 class DataObjectEvent
@@ -39,24 +28,45 @@ class DataObjectEvent
     use Injectable;
 
     /**
+     * @var class-string<T>
+     */
+    private readonly string $objectClass;
+
+    /**
+     * @var int
+     */
+    private readonly int $objectID;
+
+    /**
+     * @var array<string,mixed>
+     */
+    private readonly array $record;
+
+    /**
+     * @var int|null
+     */
+    private readonly ?int $version;
+
+    /**
      * @var int Unix timestamp when the event was created
      */
     private readonly int $timestamp;
 
     /**
-     * @param class-string<T> $objectClass The class name of the affected DataObject
-     * @param int             $objectID    The ID of the affected DataObject
-     * @param Operation       $operation   The type of operation performed
-     * @param int|null        $version     The version number (for versioned objects)
-     * @param int|null        $memberID    The ID of the member who performed the operation
+     * @param T         $object    The DataObject instance this event relates to
+     * @param Operation $operation The type of operation performed
+     * @param int|null  $memberID  The ID of the member who performed the operation
      */
     public function __construct(
-        private readonly string $objectClass,
-        private readonly int $objectID,
+        DataObject $object,
         private readonly Operation $operation,
-        private readonly ?int $version = null,
         private readonly ?int $memberID = null
     ) {
+        $this->objectClass = get_class($object);
+        $this->objectID = $object->ID;
+        $this->record = $object->getQueriedDatabaseFields();
+        // @phpstan-ignore property.notFound
+        $this->version = $object->hasExtension(Versioned::class) ? $object->Version : null;
         $this->timestamp = time();
     }
 
@@ -70,6 +80,8 @@ class DataObjectEvent
 
     /**
      * Get the class name of the affected DataObject
+     *
+     * @return class-string<T>
      */
     public function getObjectClass(): string
     {
@@ -147,6 +159,16 @@ class DataObjectEvent
     }
 
     /**
+     * Get the record data at the time of the event
+     *
+     * @return array<string,mixed>
+     */
+    public function getRecord(): array
+    {
+        return $this->record;
+    }
+
+    /**
      * Serialize the event to a string
      */
     public function serialize(): string
@@ -154,6 +176,7 @@ class DataObjectEvent
         return serialize([
             'objectID' => $this->objectID,
             'objectClass' => $this->objectClass,
+            'record' => $this->record,
             'operation' => $this->operation,
             'version' => $this->version,
             'memberID' => $this->memberID,

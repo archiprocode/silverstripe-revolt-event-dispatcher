@@ -45,19 +45,34 @@ class DataObjectEventListenerTest extends SapphireTest
             [SimpleDataObject::class]
         );
 
+        /** @var SimpleDataObject $simpleObject */
+        $simpleObject = SimpleDataObject::create();
+        $simpleObject->ID = 1;
+        /** @var VersionedDataObject $versionedObject */
+        $versionedObject = VersionedDataObject::create();
+        $versionedObject->ID = 1;
+
         // Should handle SimpleDataObject event
-        $simpleEvent = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE);
+        $simpleEvent = DataObjectEvent::create($simpleObject, Operation::CREATE);
         $listener($simpleEvent);
         $this->assertCount(1, $this->receivedEvents, 'Listener should handle SimpleDataObject events');
 
         // Should not handle VersionedDataObject event
-        $versionedEvent = DataObjectEvent::create(VersionedDataObject::class, 1, Operation::CREATE);
+        $versionedEvent = DataObjectEvent::create($versionedObject, Operation::CREATE);
         $listener($versionedEvent);
         $this->assertCount(1, $this->receivedEvents, 'Listener should not handle VersionedDataObject events');
     }
 
     public function testListenerHandlesInheritedClasses(): void
     {
+        /** @var SimpleDataObject $simpleObject */
+        $simpleObject = SimpleDataObject::create();
+        $simpleObject->write();
+
+        /** @var VersionedDataObject $versionedObject */
+        $versionedObject = VersionedDataObject::create();
+        $versionedObject->write();
+
         // Create listener that handles all DataObject events
         $listener = DataObjectEventListener::create(
             function (DataObjectEvent $event) {
@@ -67,8 +82,8 @@ class DataObjectEventListenerTest extends SapphireTest
         );
 
         // Should handle both SimpleDataObject and VersionedDataObject events
-        $simpleEvent = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE);
-        $versionedEvent = DataObjectEvent::create(VersionedDataObject::class, 1, Operation::CREATE);
+        $simpleEvent = DataObjectEvent::create($simpleObject, Operation::CREATE);
+        $versionedEvent = DataObjectEvent::create($versionedObject, Operation::CREATE);
 
         $listener($simpleEvent);
         $listener($versionedEvent);
@@ -78,6 +93,10 @@ class DataObjectEventListenerTest extends SapphireTest
 
     public function testListenerFiltersByOperation(): void
     {
+        /** @var SimpleDataObject $simpleObject */
+        $simpleObject = SimpleDataObject::create();
+        $simpleObject->write();
+
         // Create listener that only handles CREATE and UPDATE operations
         $listener = DataObjectEventListener::create(
             function (DataObjectEvent $event) {
@@ -88,23 +107,27 @@ class DataObjectEventListenerTest extends SapphireTest
         );
 
         // Should handle CREATE event
-        $createEvent = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::CREATE);
+        $createEvent = DataObjectEvent::create($simpleObject, Operation::CREATE);
         $listener($createEvent);
         $this->assertCount(1, $this->receivedEvents, 'Listener should handle CREATE events');
 
         // Should handle UPDATE event
-        $updateEvent = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::UPDATE);
+        $updateEvent = DataObjectEvent::create($simpleObject, Operation::UPDATE);
         $listener($updateEvent);
         $this->assertCount(2, $this->receivedEvents, 'Listener should handle UPDATE events');
 
         // Should not handle DELETE event
-        $deleteEvent = DataObjectEvent::create(SimpleDataObject::class, 1, Operation::DELETE);
+        $deleteEvent = DataObjectEvent::create($simpleObject, Operation::DELETE);
         $listener($deleteEvent);
         $this->assertCount(2, $this->receivedEvents, 'Listener should not handle DELETE events');
     }
 
     public function testListenerHandlesAllOperationsWhenNotSpecified(): void
     {
+        /** @var SimpleDataObject $simpleObject */
+        $simpleObject = SimpleDataObject::create();
+        $simpleObject->write();
+
         // Create listener without specifying operations
         $listener = DataObjectEventListener::create(
             function (DataObjectEvent $event) {
@@ -115,7 +138,7 @@ class DataObjectEventListenerTest extends SapphireTest
 
         // Should handle all operations
         foreach (Operation::cases() as $operation) {
-            $event = DataObjectEvent::create(SimpleDataObject::class, 1, $operation);
+            $event = DataObjectEvent::create($simpleObject, $operation);
             $listener($event);
         }
 

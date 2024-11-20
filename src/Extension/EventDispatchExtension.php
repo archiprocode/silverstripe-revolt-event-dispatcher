@@ -28,12 +28,10 @@ class EventDispatchExtension extends Extension
     {
         $owner = $this->getOwner();
         $event = DataObjectEvent::create(
-            get_class($owner),
-            $owner->ID,
+            $owner,
             // By this point isInDB() will return true even for new records since the ID is already set
             // Instead check if the ID field was changed which indicates this is a new record
             $owner->isChanged('ID') ? Operation::CREATE : Operation::UPDATE,
-            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -47,10 +45,8 @@ class EventDispatchExtension extends Extension
     {
         $owner = $this->getOwner();
         $event = DataObjectEvent::create(
-            get_class($owner),
-            $owner->ID,
+            $owner,
             Operation::DELETE,
-            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -68,10 +64,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            get_class($owner),
-            $owner->ID,
+            $owner,
             Operation::PUBLISH,
-            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -89,10 +83,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            get_class($owner),
-            $owner->ID,
+            $owner,
             Operation::UNPUBLISH,
-            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -110,10 +102,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            get_class($owner),
-            $owner->ID,
+            $owner,
             Operation::ARCHIVE,
-            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -131,10 +121,8 @@ class EventDispatchExtension extends Extension
         }
 
         $event = DataObjectEvent::create(
-            get_class($owner),
-            $owner->ID,
+            $owner,
             Operation::RESTORE,
-            $this->getVersion(),
             Security::getCurrentUser()?->ID
         );
 
@@ -151,16 +139,5 @@ class EventDispatchExtension extends Extension
     protected function dispatchEvent(DataObjectEvent $event): Future
     {
         return Injector::inst()->get(EventService::class)->dispatch($event);
-    }
-
-    private function getVersion(): ?int
-    {
-        $owner = $this->getOwner();
-        if (!$owner->hasExtension(Versioned::class)) {
-            return null;
-        }
-
-        /** @var Versioned $owner */
-        return $owner->Version;
     }
 }
