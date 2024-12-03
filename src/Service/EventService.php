@@ -6,9 +6,11 @@ use Amp\Future;
 use ArchiPro\EventDispatcher\AsyncEventDispatcher;
 use ArchiPro\EventDispatcher\ListenerProvider;
 use ArchiPro\Silverstripe\EventDispatcher\Contract\ListenerLoaderInterface;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use Throwable;
 
 /**
  * Core service class for handling event dispatching in Silverstripe.
@@ -147,5 +149,20 @@ class EventService
     public function disableDispatch(): void
     {
         $this->suppressDispatch = true;
+    }
+
+    /**
+     * Handle an error that occurred during event dispatching by logging them
+     * with the default Silverstripe CMS error handler logger.
+     *
+     * @internal This method is wired to the AsyncEventDispatcher with the Injector
+     *
+     * @see _config/events.yml
+     */
+    public static function handleError(Throwable $error): void
+    {
+        Injector::inst()
+            ->get(LoggerInterface::class)
+            ->error($error->getMessage(), ['exception' => $error]);
     }
 }

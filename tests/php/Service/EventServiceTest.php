@@ -4,6 +4,8 @@ namespace ArchiPro\Silverstripe\EventDispatcher\Tests\Service;
 
 use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
 use ArchiPro\Silverstripe\EventDispatcher\Tests\TestListenerLoader;
+use ColinODell\PsrTestLogger\TestLogger;
+use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
@@ -113,5 +115,21 @@ class EventServiceTest extends SapphireTest
 
         // Assert listener was called
         $this->assertTrue($result->handled, 'Event listener should have been called when dispatch is re-enabled');
+    }
+
+    public function testHandleError(): void
+    {
+        // Arrange
+        $testLogger = new TestLogger();
+        Injector::inst()->registerService($testLogger, LoggerInterface::class);
+        $ex = new \Exception('Test error');
+
+        // Act
+        EventService::handleError($ex);
+
+        // Assert
+        $this->assertCount(1, $testLogger->records, 'Error should be to default error logger');
+        $this->assertEquals('Test error', $testLogger->records[0]['message'], 'Error message should be "Test error"');
+        $this->assertEquals($ex, $testLogger->records[0]['context']['exception'], 'Error should be the same exception');
     }
 }

@@ -236,14 +236,37 @@ return `null` if the DataObject has been deleted.
 `DataObjectEvent::getObject(true) will attempt to retrieve the exact version of the DataObject that fired the event,
 assuming it was versioned.
 
-## Testing Your Events
+## Handling Errors in Event Listeners
 
-### Writing Event Tests
+Exceptions thrown by an event listener will not stop the execution of follow events. By default, those exceptions will be sent to `EventService::handleError()` who will logged them to the default Silverstripe CMS logger.
+
+You can provide your own error handler with Injector.
+
+```yml
+---
+Name: custom-event-service
+After:
+  - '#event-service'
+---
+SilverStripe\Core\Injector\Injector:
+  ArchiPro\EventDispatcher\AsyncEventDispatcher:
+      errorhandler: [MyCustomEventHandler, handleError]
+```
+
+## Testing your Events
 
 When testing your event listeners, you'll need to:
 1. Dispatch your events
 2. Run the event loop
 3. Assert the expected outcomes
+
+You can also use the `TestEventService` to test your events. The `TestEventService` will replace the default `EventService` and log any exceptions thrown by listeners.
+
+You need to require the `colinodell/psr-testlogger` package in your dev dependencies to use the `TestEventService`.
+
+```
+composer require colinodell/psr-testlogger --dev
+```
 
 Here's an example test:
 
@@ -251,7 +274,7 @@ Here's an example test:
 use Revolt\EventLoop;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Core\Injector\Injector;
-use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
+use ArchiPro\Silverstripe\EventDispatcher\Service\TestEventService;
 
 class MyEventTest extends SapphireTest
 {
@@ -260,8 +283,9 @@ class MyEventTest extends SapphireTest
         // Create your test event
         $event = new MyCustomEvent('test message');
         
-        // Get the event service
-        $service = Injector::inst()->get(EventService::class);
+        // Get the Test Event Service ... this will replace the default EventService with a TestEventService
+        // with an implementation that will log errors to help with debugging.
+        $service = TestEventService::bootstrap();
         
         // Add your test listener ... or if you have already
         $wasCalled = false;
@@ -280,6 +304,12 @@ class MyEventTest extends SapphireTest
         $this->assertTrue(
             MyCustomEventListener::wasCalled(),
             'Assert some side effect of the event being handled'
+        );
+
+        $this->assertCount(
+            0,
+            $service->getTestLogger()->records,
+            'No errors were logged'
         );
     }
 }
