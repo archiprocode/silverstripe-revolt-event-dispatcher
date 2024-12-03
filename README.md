@@ -251,7 +251,7 @@ Here's an example test:
 use Revolt\EventLoop;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Core\Injector\Injector;
-use ArchiPro\Silverstripe\EventDispatcher\Service\EventService;
+use ArchiPro\Silverstripe\EventDispatcher\Service\TestEventService;
 
 class MyEventTest extends SapphireTest
 {
@@ -260,8 +260,9 @@ class MyEventTest extends SapphireTest
         // Create your test event
         $event = new MyCustomEvent('test message');
         
-        // Get the event service
-        $service = Injector::inst()->get(EventService::class);
+        // Get the Test Event Service ... this will replace the default EventService with a TestEventService
+        // with an implementation that will log errors to help with debugging.
+        $service = TestEventService::bootstrap();
         
         // Add your test listener ... or if you have already
         $wasCalled = false;
@@ -280,6 +281,12 @@ class MyEventTest extends SapphireTest
         $this->assertTrue(
             MyCustomEventListener::wasCalled(),
             'Assert some side effect of the event being handled'
+        );
+
+        $this->assertCount(
+            0,
+            $service->getLogger()->records,
+            'No errors were logged'
         );
     }
 }
