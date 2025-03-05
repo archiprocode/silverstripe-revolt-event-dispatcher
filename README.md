@@ -34,6 +34,7 @@ try {
     // This call will complete the request without closing the PHP worker. A nice side effect of this is that your 
     // event listeners won't block your request from being sent to the client. So you can use them to run slow
     // operations like sending emails or doing API calls without delaying the response.
+    session_write_close();
     fastcgi_finish_request();
 
     // Many methods in Silverstripe CMS rely on having a current controller with a request.
