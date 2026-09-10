@@ -3,6 +3,7 @@
 namespace ArchiPro\Silverstripe\EventDispatcher\Event;
 
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Dev\Deprecation;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Versioned\Versioned;
@@ -20,6 +21,7 @@ use SilverStripe\Versioned\Versioned;
  * - The version number (for versioned objects)
  * - The ID of the member who performed the operation
  * - The timestamp when the operation occurred
+ * - A CHANGE_VALUE snapshot of $db / has_one fields that differed on the live object
  *
  * @template T of DataObject
  */
@@ -53,9 +55,18 @@ class DataObjectEvent
     private readonly int $timestamp;
 
     /**
-     * @param T         $object    The DataObject instance this event relates to
+     * Database-field changes at dispatch, captured at CHANGE_VALUE.
+     *
+     * A default empty map lets old native payloads omit this property on PHP 8.1.
+     *
+     * @var array<string, array{before: mixed, after: mixed, level: int}>
+     */
+    private array $changedFields = [];
+
+    /**
+     * @param T         $object    The DataObject this event relates to
      * @param Operation $operation The type of operation performed
-     * @param int|null  $memberID  The ID of the member who performed the operation
+     * @param int|null  $memberID  Member who performed the operation
      */
     public function __construct(
         DataObject $object,
@@ -68,6 +79,7 @@ class DataObjectEvent
         // @phpstan-ignore property.notFound
         $this->version = $object->hasExtension(Versioned::class) ? $object->Version : null;
         $this->timestamp = time();
+        $this->changedFields = $object->getChangedFields(true, DataObject::CHANGE_VALUE);
     }
 
     /**
@@ -123,10 +135,11 @@ class DataObjectEvent
     /**
      * Get the DataObject associated with this event
      *
-     * @phpstan-return T|null
      *
      * @param bool $useVersion If true and the object is versioned, retrieves the specific version that was affected
      *                         Note: This may return null if the object has been deleted since the event was created
+     *
+     * @phpstan-return T|null
      */
     public function getObject(bool $useVersion = false): ?DataObject
     {
@@ -169,11 +182,53 @@ class DataObjectEvent
     }
 
     /**
+     * The fields that changed on this write, with before/after values.
+     *
+     * @return array<string, array{before: mixed, after: mixed, level: int}>
+     */
+    public function getChangedFields(): array
+    {
+        return $this->changedFields;
+    }
+
+    /**
+     * Whether a field (or any field) changed on this write.
+     *
+     * The snapshot is always CHANGE_VALUE, so this does not take a $level argument.
+     */
+    public function isChanged(?string $fieldName = null): bool
+    {
+        if ($fieldName === null) {
+            return $this->changedFields !== [];
+        }
+
+        return array_key_exists($fieldName, $this->changedFields);
+    }
+
+    /**
      * Serialize the event to a string
+     *
+     * @deprecated 0.3.0 Use PHP native serialize($event) instead
      */
     public function serialize(): string
     {
-        return serialize([
+        Deprecation::notice(
+            '0.3.0',
+            'Use PHP native serialize($event) instead of the instance serialize() method',
+            Deprecation::SCOPE_METHOD
+        );
+
+        return serialize($this->__serialize());
+    }
+
+    /**
+     * Fields stored by PHP native serialize() and by serialize().
+     *
+     * @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return [
             'objectID' => $this->objectID,
             'objectClass' => $this->objectClass,
             'record' => $this->record,
@@ -181,22 +236,55 @@ class DataObjectEvent
             'version' => $this->version,
             'memberID' => $this->memberID,
             'timestamp' => $this->timestamp,
-        ]);
+            'changedFields' => $this->changedFields,
+        ];
     }
 
     /**
      * Unserialize the event from a string
      *
      * @param string $data
+     *
+     * @deprecated 0.3.0 Use PHP native unserialize($string) instead
      */
     public function unserialize(string $data): void
     {
-        $unserialized = unserialize($data);
+        Deprecation::notice(
+            '0.3.0',
+            'Use PHP native unserialize($string) instead of the instance unserialize() method',
+            Deprecation::SCOPE_METHOD
+        );
 
-        // Use reflection to set readonly properties
+        $unserialized = unserialize($data);
+        if (!is_array($unserialized)) {
+            throw new \UnexpectedValueException('Serialized DataObjectEvent payload must be an array');
+        }
+
+        $this->hydrateFromSerialized($unserialized);
+    }
+
+    /**
+     * Restore from PHP native serialize() payloads, including those without changedFields.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->hydrateFromSerialized($data);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function hydrateFromSerialized(array $data): void
+    {
         $reflection = new \ReflectionClass($this);
 
-        foreach ($unserialized as $property => $value) {
+        foreach ($data as $property => $value) {
+            if (!$reflection->hasProperty($property)) {
+                continue;
+            }
+
             $prop = $reflection->getProperty($property);
             $prop->setAccessible(true);
             $prop->setValue($this, $value);
