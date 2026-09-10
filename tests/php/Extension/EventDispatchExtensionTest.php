@@ -55,6 +55,7 @@ class EventDispatchExtensionTest extends SapphireTest
 
         $this->assertCount(1, static::$events);
         $this->assertEquals(Operation::CREATE, static::$events[0]->getOperation());
+        $this->assertTrue(static::$events[0]->isChanged('Title'));
 
         // Clear events
         static::$events = [];
@@ -67,6 +68,25 @@ class EventDispatchExtensionTest extends SapphireTest
 
         $this->assertCount(1, static::$events);
         $this->assertEquals(Operation::UPDATE, static::$events[0]->getOperation());
+        $this->assertTrue(static::$events[0]->isChanged('Title'));
+        $this->assertEquals('Test', static::$events[0]->getChangedFields()['Title']['before']);
+        $this->assertNotNull(static::$events[0]->getObject());
+        $this->assertFalse(static::$events[0]->getObject()->isChanged('Title'));
+    }
+
+    public function testDeleteDoesNotRequireFieldChanges(): void
+    {
+        $object = SimpleDataObject::create(['Title' => 'Test']);
+        $object->write();
+        EventLoop::run();
+
+        static::$events = [];
+        $object->delete();
+        EventLoop::run();
+
+        $this->assertCount(1, static::$events);
+        $this->assertEquals(Operation::DELETE, static::$events[0]->getOperation());
+        $this->assertArrayNotHasKey('Title', static::$events[0]->getChangedFields());
     }
 
     public function testDeleteEvent(): void

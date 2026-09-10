@@ -223,12 +223,20 @@ DataObjectEventListener::create(
         $version = $event->getVersion();      // Get version number (if versioned)
         $member = $event->getMember();        // Get the Member who performed the action
         $time = $event->getTimestamp();       // Get when the event occurred
+        $fields = $event->getChangedFields(); // $db / has_one changes at CHANGE_VALUE
+        $event->isChanged('Title');           // Whether Title's value changed
+        $fields['Title']['before'] ?? null;   // Previous Title, only if Title is in the map
     },
     [DataObject::class]
 )->selfRegister();
 ```
 
+`isChanged()` on the event reports CHANGE_VALUE snapshots only. `DataObject::isChanged()` defaults to `CHANGE_STRICT`. Use the event methods in listeners: `getObject()` reloads from the database, so the ORM change flags are empty by the time the listener runs. Read a previous value from `getChangedFields()[$field]['before']` only when `$field` is in the map.
+
+The snapshot only includes `$db` and `has_one` fields (`getChangedFields(true)`). `many_many` relations are not included. `DataObjectEvent::create()` of a clean object (loaded from the database with no field assignment) has an empty changed-fields map.
+
 `DataObjectEvent` is configured to be serializable so it can easily be stored for later use.
+`serialize()` / `unserialize()` on the event are deprecated; store with PHP native `serialize($event)` / `unserialize($string)`.
 
 Note that `DataObjectEvent` doesn't store the actual DataObject instance that caused the event to be fired. 
 `DataObjectEvent::getObject()` will refetch the latest version of the DataObject from the database ... which will 
